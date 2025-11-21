@@ -88,4 +88,57 @@ docker-compose up --build
 
 ## **Screenshot**
 
+**Home Page:**
 ![Home Page](image.png)
+
+**User Page:**
+
+#### User Table
+
+![User Page](image-1.png)
+
+#### Create User
+
+![Create User](image-2.png)
+
+#### Edit User
+
+![Edit User](image-3.png)
+
+#### Delete User
+
+![Delete User](image-4.png)
+
+#### Search User
+
+![Search User](image-5.png)
+
+#### Sort User
+
+![Sort User](image-6.png)
+
+**Product Page:**
+
+#### Product Table
+
+![Product Table](image-7.png)
+
+#### Create Product
+
+![Create Product](image-8.png)
+
+#### Edit Product
+
+![Edit Product](image-9.png)
+
+#### Delete Product
+
+![Delete Product](image-10.png)
+
+#### Search Product
+
+![Search Product](image-11.png)
+
+#### Sort Product
+
+![Sort Product](image-12.png)
