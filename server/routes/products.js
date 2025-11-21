@@ -1,6 +1,7 @@
 import express from "express";
 import { Product } from "../models/product.js";
 import { buildQueryOptions } from "../utils/queryOptions.js";
+import { col, fn, where } from "sequelize";
 
 const router = express.Router();
 
@@ -8,11 +9,12 @@ router.get("/", async (req, res) => {
   try {
     const options = buildQueryOptions(req.query, ["name", "category"]);
     const { rows, count } = await Product.findAndCountAll(options);
+
     res.status(200).json({
       data: rows,
       total: count,
-      page: Number(req.query.page) || 1,
-      limit: Number(req.query.limit) || 10,
+      page: options.page,
+      limit: options.limit,
     });
   } catch (error) {
     console.error(error);
@@ -24,7 +26,10 @@ router.post("/", async (req, res) => {
   try {
     const { name, price, category } = req.body;
 
-    const existed = await Product.findOne({ where: { name } });
+    const existed = await Product.findOne({
+      where: where(fn("LOWER", col("name")), fn("LOWER", name)),
+    });
+
     if (existed) {
       return res.status(409).json({ message: "Product name already exists" });
     }
@@ -45,7 +50,10 @@ router.put("/:id", async (req, res) => {
     if (!product) return res.status(404).json({ message: "Product not found" });
 
     if (name && name !== product.name) {
-      const existed = await Product.findOne({ where: { name } });
+      const existed = await Product.findOne({
+        where: where(fn("LOWER", col("name")), fn("LOWER", name)),
+      });
+
       if (existed) {
         return res.status(409).json({ message: "Product name already exists" });
       }

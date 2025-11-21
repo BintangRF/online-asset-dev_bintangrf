@@ -4,7 +4,7 @@ export function buildQueryOptions(query, searchableFields = []) {
   const {
     page = 1,
     limit = 10,
-    sort = "createdAt",
+    sort = "id",
     order = "DESC",
     search = "",
     ...filters
@@ -24,8 +24,12 @@ export function buildQueryOptions(query, searchableFields = []) {
 
   return {
     where,
-    order: [[sort, order.toUpperCase() === "ASC" ? "ASC" : "DESC"]],
+    order: [
+      [sort, order.toUpperCase() === "ASC" ? "ASC" : "DESC"],
+      ["id", "ASC"],
+    ],
     limit: Number(limit),
     offset,
+    page: Number(page),
   };
 }

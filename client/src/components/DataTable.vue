@@ -23,6 +23,7 @@ const editing = ref(null);
 const submitting = ref(false);
 
 const formValues = ref({});
+const formKey = ref(0);
 
 let searchTimer = null;
 const onSearch = () => {
@@ -34,9 +35,9 @@ const totalPages = computed(() =>
   Math.max(1, Math.ceil(props.total / props.limit))
 );
 
-const go = (p) => {
-  if (p < 1 || p > totalPages.value) return;
-  emits("change-page", p);
+const go = (page) => {
+  if (page < 1 || page > totalPages.value) return;
+  emits("change-page", page);
 };
 
 const sortKey = ref("");
@@ -56,15 +57,18 @@ const openCreate = () => {
   editing.value = null;
   formValues.value = { ...(props.form.initial || {}) };
   showModal.value = true;
+  formKey.value++;
 };
 
 const openEdit = (row) => {
   editing.value = row;
   formValues.value = { ...(props.form.initial || {}), ...row };
   showModal.value = true;
+  formKey.value++;
 };
 
 const closeModal = () => {
+  formValues.value = {};
   showModal.value = false;
   editing.value = null;
   submitting.value = false;
@@ -105,7 +109,8 @@ const submitForm = async (values) => {
     closeModal();
     emits("refresh");
   } catch (e) {
-    toast.error(e?.message || "Failed");
+    const res = e?.response?.data;
+    toast.error(res?.message || "Failed");
     submitting.value = false;
   }
 };
@@ -170,9 +175,14 @@ const del = async (row) => {
             </td>
           </tr>
 
-          <tr v-else v-for="row in data" :key="row.id">
+          <tr v-else v-for="(row, rowIndex) in data" :key="row.id">
             <td v-for="c in columns" :key="c.key">
-              {{ row[c.key] }}
+              <span v-if="c.key === 'id'">
+                {{ rowIndex + 1 + (page - 1) * limit }}
+              </span>
+              <span v-else>
+                {{ row[c.key] }}
+              </span>
             </td>
 
             <td class="flex gap-2">
@@ -225,6 +235,7 @@ const del = async (row) => {
         </h3>
 
         <Form
+          :key="formKey"
           :initial-values="formValues"
           :validation-schema="yupSchema"
           @submit="submitForm"

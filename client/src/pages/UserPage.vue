@@ -1,40 +1,78 @@
 <script setup>
-import { ref, computed } from "vue";
-import { useQuery } from "@tanstack/vue-query";
+import { useMutation, useQuery } from "@tanstack/vue-query";
 import { api } from "../api/api";
 import DataTable from "../components/DataTable.vue";
+import { useQueryParams } from "../composables/useQueryParams";
 
-const page = ref(1);
-const limit = ref(10);
-const search = ref("");
-const sortKey = ref("");
-const sortOrder = ref("");
-
-const usersQueryKey = computed(() => [
-  "users",
-  page.value,
-  limit.value,
-  search.value,
-  sortKey.value,
-  sortOrder.value,
-]);
+const {
+  page,
+  limit,
+  search,
+  sortKey,
+  sortOrder,
+  queryKey,
+  buildOptionalParams,
+  setDefaultsFromBE,
+} = useQueryParams({
+  page: 1,
+  limit: 10,
+  sortKey: "id",
+  sortOrder: "DESC",
+});
 
 const { isPending, data, refetch } = useQuery({
-  queryKey: usersQueryKey,
+  queryKey: queryKey,
   queryFn: async () => {
-    const res = await api.get("/users", {
-      params: {
-        page: page.value,
-        limit: limit.value,
-        search: search.value,
-        sort: sortKey.value || "createdAt",
-        order: sortOrder.value || "DESC",
-      },
-    });
+    const params = buildOptionalParams();
+    const res = await api.get("/users", { params });
+
+    setDefaultsFromBE(res.data);
+
     return res.data;
   },
   keepPreviousData: true,
 });
+
+const { mutate: createMutation } = useMutation({
+  mutationFn: (payload) => api.post("/users", payload),
+});
+
+const { mutate: updateMutation } = useMutation({
+  mutationFn: ({ row, payload }) => api.put(`/users/${row.id}`, payload),
+});
+
+const { mutate: deleteMutation } = useMutation({
+  mutationFn: (row) => api.delete(`/users/${row.id}`),
+});
+
+const actions = {
+  create: (payload) =>
+    new Promise((resolve, reject) => {
+      createMutation(payload, {
+        onSuccess: (res) => resolve(res.data),
+        onError: reject,
+      });
+    }),
+
+  update: (row, payload) =>
+    new Promise((resolve, reject) => {
+      updateMutation(
+        { row, payload },
+        {
+          onSuccess: (res) => resolve(res.data),
+          onError: reject,
+        }
+      );
+    }),
+
+  delete: (row) =>
+    new Promise((resolve, reject) => {
+      deleteMutation(row, {
+        onSuccess: (res) => resolve(res.data),
+        onError: reject,
+      });
+    }),
+};
 
 const handleSearch = (value) => {
   search.value = value;
@@ -57,7 +95,7 @@ const handleChangePage = (p) => {
     <DataTable
       :data="data?.data || []"
       :columns="[
-        { label: 'ID', key: 'id' },
+        { label: 'No', key: 'id' },
         { label: 'Name', key: 'name' },
         { label: 'Email', key: 'email' },
       ]"
@@ -82,20 +120,7 @@ const handleChangePage = (p) => {
         ],
         initial: { name: '', email: '' },
       }"
-      :actions="{
-        create: async (payload) => {
-          const res = await api.post('/users', payload);
-          return res.data;
-        },
-        update: async (row, payload) => {
-          const res = await api.put('/users/' + row.id, payload);
-          return res.data;
-        },
-        delete: async (row) => {
-          const res = await api.delete('/users/' + row.id);
-          return res.data;
-        },
-      }"
+      :actions="actions"
       @refresh="refetch"
       @search="handleSearch"
       @sort="handleSort"

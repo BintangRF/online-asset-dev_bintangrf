@@ -1,6 +1,7 @@
 import express from "express";
 import { User } from "../models/user.js";
 import { buildQueryOptions } from "../utils/queryOptions.js";
+import { col, fn, where } from "sequelize";
 
 const router = express.Router();
 
@@ -12,8 +13,8 @@ router.get("/", async (req, res) => {
     res.status(200).json({
       data: rows,
       total: count,
-      page: Number(req.query.page) || 1,
-      limit: Number(req.query.limit) || 10,
+      page: options.page,
+      limit: options.limit,
     });
   } catch (err) {
     console.error(err);
@@ -25,7 +26,10 @@ router.post("/", async (req, res) => {
   try {
     const { name, email } = req.body;
 
-    const existed = await User.findOne({ where: { email } });
+    const existed = await User.findOne({
+      where: where(fn("LOWER", col("email")), fn("LOWER", email)),
+    });
+
     if (existed) {
       return res.status(409).json({ message: "Email already exists" });
     }
@@ -46,7 +50,10 @@ router.put("/:id", async (req, res) => {
     if (!user) return res.status(404).json({ message: "User not found" });
 
     if (email && email !== user.email) {
-      const existed = await User.findOne({ where: { email } });
+      const existed = await User.findOne({
+        where: where(fn("LOWER", col("email")), fn("LOWER", email)),
+      });
+
       if (existed) {
         return res.status(409).json({ message: "Email already exists" });
       }

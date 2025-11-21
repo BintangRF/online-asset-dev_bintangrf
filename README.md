@@ -1,39 +1,41 @@
 # Online Asset Devtest - Bintang Ramadhana Faturizky
 
-## **Deskripsi**
+## **Description**
 
-Project ini adalah dashboard full-stack sederhana dengan manajemen **Users** dan **Products**. Frontend menggunakan **Vue 3 + TailwindCSS + DaisyUI + TanStack Query + Form Handling (VeeValidate + Yup)**, sedangkan backend menggunakan **Node.js + Express + Sequelize + PostgreSQL**. Database otomatis di-seed saat server pertama kali dijalankan.
+This project is a simple full-stack dashboard with **User** and **Product** management.
+The frontend uses **Vue 3 + TailwindCSS + DaisyUI + TanStack Query + Form Handling (VeeValidate + Yup)**, while the backend uses **Node.js + Express + Sequelize + PostgreSQL**.
+The database is automatically seeded when the server starts for the first time.
 
 ---
 
-## **Library yang digunakan**
+## **Libraries Used**
 
 ### **Client**
 
 - Vue 3 (core framework)
-- Vue Router (routing halaman)
+- Vue Router (page routing)
 - TailwindCSS (utility-first CSS)
-- DaisyUI (UI components berbasis Tailwind)
+- DaisyUI (Tailwind-based UI components)
 - Axios (HTTP client)
-- TanStack Query (data fetching dan state management)
+- TanStack Query (data fetching and state management)
 - Vee-Validate + Yup (form validation)
 
 **Dev Dependencies:**
 
-- Vite (build tool dan dev server)
-- @vitejs/plugin-vue (plugin Vue untuk Vite)
-- @tailwindcss/vite (integrasi Tailwind dengan Vite)
+- Vite (build tool and dev server)
+- @vitejs/plugin-vue (Vue plugin for Vite)
+- @tailwindcss/vite (Tailwind integration for Vite)
 
 ---
 
 ### **Server**
 
 - Express (web framework)
-- Sequelize (ORM untuk PostgreSQL)
+- Sequelize (ORM for PostgreSQL)
 - pg (PostgreSQL driver)
 - dotenv (load environment variables)
-- cors (mengizinkan request dari client)
-- nodemon (dev server reload otomatis)
+- cors (allows client requests)
+- nodemon (auto reload dev server)
 
 ---
 
@@ -58,32 +60,32 @@ NODE_ENV=development
 
 ---
 
-## **Cara Menjalankan Project**
+## **How to Run the Project**
 
-1. **Clone repository**
+1. **Clone the repository**
 
 ```bash
 git clone <repo-url>
 cd <project-root>
 ```
 
-2. **Jalankan semua container dengan Docker**
+2. **Start all containers using Docker**
 
 ```bash
 docker-compose up --build
 ```
 
-- **Database** PostgreSQL otomatis berjalan.
-- **Server** akan melakukan seed database otomatis dan menjalankan API di port 3000.
-- **Client** Vite dev server berjalan di port 5173 dengan hot reload.
+- The PostgreSQL **database** starts automatically.
+- The **server** seeds the database and runs the API on port 3000.
+- The **client** Vite dev server runs on port 5173 with hot reload.
 
-3. **Akses aplikasi**
+3. **Access the application**
 
 - Dashboard: `http://localhost:5173`
-- API server: `http://localhost:3000/api/users` atau `/api/products`
+- API server: `http://localhost:3000/api/users` or `/api/products`
 
 ---
 
 ## **Screenshot**
 
-![Dashboard Screenshot](assets/dashboard.png)
+![Home Page](image.png)
